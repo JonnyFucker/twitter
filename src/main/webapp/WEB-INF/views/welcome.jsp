@@ -21,7 +21,9 @@
 
     <link rel='stylesheet' href='<c:url value="/resources/css/style.css" />' type='text/css' media='all'/>
     <link href='<c:url value="/resources/css/bootstrap.min.css" />' rel="stylesheet">
+<%--
     <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+--%>
     <title>Twitter
         by Tomasz Zielichowski
     </title>
@@ -91,9 +93,9 @@
         </div>
     </div>
 </section>
-<script src="/resources/js/jquery-3.1.0.js"></script>
-<script src="/resources/js/bootstrap.min.js"></script>
-<script src="/resources/js/paginathing.js"></script>
+<script src='<c:url value="/resources/js/jquery-3.1.1.js"/>'></script>
+<script src='<c:url value="/resources/js/bootstrap.min.js"/>'></script>
+<script src='<c:url value="/resources/js/paginathing.js"/>'></script>
 
 <script type="text/javascript">
     function appendToTable(data, tableId) {
@@ -118,7 +120,7 @@
                 type: "POST",
                 data: {"tag": tag},
                 dataType: "json",
-                url: "/tweets",
+                url: "/twitter/tweets",
                 success: function (data) {
                     appendToTable(data, 'tweets');
 
@@ -144,7 +146,7 @@
                 type: "POST",
                 data: {"name": person},
                 dataType: "json",
-                url: "/person",
+                url: "/twitter/person",
                 success: function (data) {
                     appendToTable(data, 'tweetsPeople');
 
