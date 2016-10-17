@@ -28,39 +28,64 @@
 
 </head>
 <body>
-<h2>Hello World, Spring MVC</h2>
 
-<p>Welcome, ${name}</p>
 <section>
     <div class="container">
         <div class="row">
-            <div class="col-md-3 col-lg-4">
-                <div>
-                    <div class="input-group">
-                        <input id="search" type="text" class="form-control" placeholder="Search for...">
-                        <span class="input-group-btn">
+            <div class="col-lg-12 margin">
+                <div class="col-md-6 col-lg-6">
+                    <div>
+                        <div class="input-group">
+                            <input id="search" type="text" class="form-control" placeholder="Search for...">
+                            <span class="input-group-btn">
                             <button id="submitButton" class="btn btn-default" type="submit">Search <span
                                     class="glyphicon glyphicon-search" aria-hidden="true"></span>
                             </button>
                         </span>
-                    </div><!-- /input-group -->
-                </div><!-- /.col-lg-6 -->
+                        </div><!-- /input-group -->
+                    </div><!-- /.col-lg-6 -->
 
-            </div>
-            <div class="col-md-9 col-lg-8">
-                <div id="tweetsTableDiv">
-                    <table id="tweetsTable" class="table table-hover ">
-                        <thead>
-                        <tr class="text-info">
-                            <th>Image</th>
-                            <th>User</th>
-                            <th>Text</th>
-                            <th>Source</th>
-                        </tr>
-                        </thead>
-                        <tbody id="tweets">
-                        </tbody>
-                    </table>
+                    <div id="tweetsTableDiv">
+                        <table id="tweetsTable" class="table table-hover ">
+                            <thead>
+                            <tr class="text-info">
+                                <th>Image</th>
+                                <th>User</th>
+                                <th>Text</th>
+                                <th>Source</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tweets">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6">
+                    <div>
+                        <div class="input-group">
+                            <input id="searchPeople" type="text" class="form-control" placeholder="Search for...">
+                            <span class="input-group-btn">
+                            <button id="submitPeople" class="btn btn-default" type="submit">Search <span
+                                    class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                        </div><!-- /input-group -->
+                    </div><!-- /.col-lg-6 -->
+
+                    <div id="tweetsPeopleDiv">
+                        <table id="tweetsTablePeople" class="table table-hover ">
+                            <thead>
+                            <tr class="text-info">
+                                <th>Image</th>
+                                <th>User</th>
+                                <th>Text</th>
+                                <th>Source</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tweetsPeople">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,7 +103,7 @@
             var tag = $('#search').val();
             console.log(tag);
 
-            $.get("/tweets/"+tag, function (data) {
+            $.get("/tweets/" + tag, function (data) {
                 $.each(data, function (index, val) {
                     $('#tweets').append("<tr> <td class='col-md-2'> <img class='img-responsive' src=' " + val.profileImageUrl + " ' </img>  </td> " +
                             " <td class='col-md-1'>" + val.fromUser + "  </td> " +
@@ -88,9 +113,9 @@
                 });
 
                 $('#tweets').paginathing({
-                    perPage: 4,
+                    perPage: 3,
                     limitPagination: 4,
-                    insertAfter: '.table',
+                    insertAfter: '#tweetsTable',
                     containerClass: 'tweets-container'
                 });
             });
