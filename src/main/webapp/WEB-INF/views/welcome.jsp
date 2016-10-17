@@ -94,34 +94,78 @@
 <script src="/resources/js/jquery-3.1.0.js"></script>
 <script src="/resources/js/bootstrap.min.js"></script>
 <script src="/resources/js/paginathing.js"></script>
+
 <script type="text/javascript">
-    $(document).ready(function () {
+    function appendToTable(data, tableId) {
+        var id = $("#"+tableId);
+        console.log(id);
+        $.each(data, function (index, val) {
+            $(id).append("<tr> <td class='col-md-2'> <img class='img-responsive' src=' " + val.profileImageUrl + " ' </img>  </td> " +
+                    " <td class='col-md-1'>" + val.fromUser + "  </td> " +
+                    " <td class='col-md-5'>" + val.text + "  </td> " +
+                    " <td class='col-md-1'>" + val.source + "  </td></tr> "
+            );
+        });
+    }
+    function getTweetsByTag() {
         $('#submitButton').on('click', function () {
             $('#tweets').empty();
             $('.tweets-container').remove();
 
             var tag = $('#search').val();
-            console.log(tag);
 
-            $.get("/tweets/" + tag, function (data) {
-                $.each(data, function (index, val) {
-                    $('#tweets').append("<tr> <td class='col-md-2'> <img class='img-responsive' src=' " + val.profileImageUrl + " ' </img>  </td> " +
-                            " <td class='col-md-1'>" + val.fromUser + "  </td> " +
-                            " <td class='col-md-5'>" + val.text + "  </td> " +
-                            " <td class='col-md-1'>" + val.source + "  </td></tr> "
-                    );
-                });
+            $.ajax({
+                type: "POST",
+                data: {"tag": tag},
+                dataType: "json",
+                url: "/tweets",
+                success: function (data) {
+                    appendToTable(data, 'tweets');
 
-                $('#tweets').paginathing({
-                    perPage: 3,
-                    limitPagination: 4,
-                    insertAfter: '#tweetsTable',
-                    containerClass: 'tweets-container'
-                });
+                    $('#tweets').paginathing({
+                        perPage: 3,
+                        limitPagination: 4,
+                        insertAfter: '#tweetsTable',
+                        containerClass: 'tweets-container'
+                    });
+                }
             });
 
         });
+    }
+    function getTweetsByPerson() {
+        $('#submitPeople').on('click', function () {
+            $('#tweetsPeople').empty();
+            $('.tweets-container-people').remove();
 
+            var person = $('#searchPeople').val();
+
+            $.ajax({
+                type: "POST",
+                data: {"name": person},
+                dataType: "json",
+                url: "/person",
+                success: function (data) {
+                    appendToTable(data, 'tweetsPeople');
+
+                    $('#tweetsPeople').paginathing({
+                        perPage: 3,
+                        limitPagination: 4,
+                        insertAfter: '#tweetsTablePeople',
+                        containerClass: 'tweets-container-people'
+                    });
+                }
+            });
+
+        });
+    }
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        getTweetsByTag();
+        getTweetsByPerson();
     });
 
 </script>

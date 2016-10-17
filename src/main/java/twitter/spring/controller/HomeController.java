@@ -25,9 +25,9 @@ public class HomeController {
         this.twitter = twitter;
     }
 
-    @RequestMapping(value = "/tweets/{tag}")
+    @RequestMapping(value = "/tweets")
     @ResponseBody
-    public List<Tweet> test(@PathVariable("tag") String tag) throws IOException {
+    public List<Tweet> test(@RequestParam("tag") String tag)  {
         if (!tag.startsWith("#"))
             tag = "#" + tag;
 
@@ -44,6 +44,15 @@ public class HomeController {
 */
         // Optional Step - format the Tweets into HTML
         return search.getTweets();
+    }
+
+    @RequestMapping(value = "/person")
+    @ResponseBody
+    public List<Tweet> getPersonTweet(@RequestParam("name") String name){
+/*        if (!name.startsWith("@"))
+            name = "#" + name;*/
+        List<Tweet> tweets = twitter.timelineOperations().getUserTimeline(name);
+        return tweets;
     }
 
     @GetMapping("/hello")
