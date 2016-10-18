@@ -19,9 +19,14 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <link rel='stylesheet' href='<c:url value="/resources/css/style.css" />' type='text/css' media='all'/>
     <link href='<c:url value="/resources/css/bootstrap.min.css" />' rel="stylesheet">
-    <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href='<c:url value="/resources/css/style.css" />' rel="stylesheet">
+    <link href='<c:url value="/resources/css/font-awesome-animation.min.css" />' rel="stylesheet">
+
+
+<%--
+        <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+    --%>
     <title>Twitter
         by Tomasz Zielichowski
     </title>
@@ -38,12 +43,13 @@
                         <div class="input-group">
                             <input id="search" type="text" class="form-control" placeholder="Search for...">
                             <span class="input-group-btn">
-                            <button id="submitButton" class="btn btn-default" type="submit">Search <span
+                            <button id="submitButton" class="btn btn-default faa-parent animated-hover" type="submit">Search <span id="iconTag"
                                     class="glyphicon glyphicon-search" aria-hidden="true"></span>
                             </button>
                         </span>
                         </div><!-- /input-group -->
-                    </div><!-- /.col-lg-6 -->
+                    </div>
+                    <!-- /.col-lg-6 -->
 
                     <div id="tweetsTableDiv">
                         <table id="tweetsTable" class="table table-hover ">
@@ -65,7 +71,7 @@
                         <div class="input-group">
                             <input id="searchPeople" type="text" class="form-control" placeholder="Search for...">
                             <span class="input-group-btn">
-                            <button id="submitPeople" class="btn btn-default" type="submit">Search <span
+                            <button id="submitPeople" class="btn btn-default faa-parent animated-hover" type="submit">Search <span id="iconPeople"
                                     class="glyphicon glyphicon-search" aria-hidden="true"></span>
                             </button>
                         </span>
@@ -91,35 +97,52 @@
         </div>
     </div>
 </section>
-<script src="/resources/js/jquery-3.1.0.js"></script>
-<script src="/resources/js/bootstrap.min.js"></script>
-<script src="/resources/js/paginathing.js"></script>
+<script src='<c:url value="/resources/js/jquery-3.1.0.js"/>'></script>
+<script src='<c:url value="/resources/js/bootstrap.min.js"/>'></script>
+<script src='<c:url value="/resources/js/paginathing.js"/>'></script>
 
 <script type="text/javascript">
-    function appendToTable(data, tableId) {
-        var id = $("#"+tableId);
-        console.log(id);
-        $.each(data, function (index, val) {
-            $(id).append("<tr> <td class='col-md-2'> <img class='img-responsive' src=' " + val.profileImageUrl + " ' </img>  </td> " +
-                    " <td class='col-md-1'>" + val.fromUser + "  </td> " +
-                    " <td class='col-md-5'>" + val.text + "  </td> " +
-                    " <td class='col-md-1'>" + val.source + "  </td></tr> "
-            );
+    $(document).ready(function () {
+        enterOnSearchBox('search');
+        enterOnSearchBox('searchPeople');
+
+        getTweetsByTag();
+        getTweetsByPerson();
+
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function enterOnSearchBox(boxId) {
+        var id = $("#" + boxId);
+        $(id).keypress(function (event) {
+            if (event.keyCode == 13) {
+                if (boxId == 'search') {
+                    $('#submitButton').click();
+                }
+                if (boxId == 'searchPeople') {
+                    $('#submitPeople').click();
+                }
+            }
         });
     }
+
     function getTweetsByTag() {
         $('#submitButton').on('click', function () {
             $('#tweets').empty();
             $('.tweets-container').remove();
-
+            $('#iconTag').removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
             var tag = $('#search').val();
 
             $.ajax({
                 type: "POST",
                 data: {"tag": tag},
                 dataType: "json",
-                url: "/tweets",
+                url: "/twitter/tweets",
                 success: function (data) {
+                    $('#iconTag').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
                     appendToTable(data, 'tweets');
 
                     $('#tweets').paginathing({
@@ -128,6 +151,9 @@
                         insertAfter: '#tweetsTable',
                         containerClass: 'tweets-container'
                     });
+                },
+                error: function () {
+                    $('#iconPeople').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
                 }
             });
 
@@ -137,6 +163,7 @@
         $('#submitPeople').on('click', function () {
             $('#tweetsPeople').empty();
             $('.tweets-container-people').remove();
+            $('#iconPeople').removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
 
             var person = $('#searchPeople').val();
 
@@ -144,8 +171,9 @@
                 type: "POST",
                 data: {"name": person},
                 dataType: "json",
-                url: "/person",
+                url: "/twitter/person",
                 success: function (data) {
+                    $('#iconPeople').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
                     appendToTable(data, 'tweetsPeople');
 
                     $('#tweetsPeople').paginathing({
@@ -154,21 +182,26 @@
                         insertAfter: '#tweetsTablePeople',
                         containerClass: 'tweets-container-people'
                     });
+                },
+                error: function () {
+                    $('#iconPeople').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
                 }
             });
 
         });
     }
+
+    function appendToTable(data, tableId) {
+        var id = $("#" + tableId);
+        console.log(id);
+        $.each(data, function (index, val) {
+            $(id).append("<tr> <td class='col-md-2'> <img class='img-responsive' src=' " + val.profileImageUrl + " ' </img>  </td> " +
+                    " <td class='col-md-1'>" + val.fromUser + "  </td> " +
+                    " <td class='col-md-5'>" + val.text + "  </td> " +
+                    " <td class='col-md-1'>" + val.source + "  </td></tr> "
+            );
+        });
+    }
 </script>
-
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        getTweetsByTag();
-        getTweetsByPerson();
-    });
-
-</script>
-
 </body>
 </html>

@@ -18,7 +18,6 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "twitter.spring")
-
 public class AppConfig extends WebMvcConfigurerAdapter {
     @Bean
     public ViewResolver viewResolver(){
