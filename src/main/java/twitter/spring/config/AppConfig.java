@@ -11,6 +11,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+import twitter.spring.filters.ApplicationFilters;
+import twitter.spring.filters.TweeterFilter;
 
 /**
  * Created by Tomek on 17.10.16.
@@ -26,6 +28,11 @@ public class AppConfig extends WebMvcConfigurerAdapter {
         viewResolver.setPrefix("/WEB-INF/views/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
+    }
+
+    @Bean
+    public ApplicationFilters applicationFilters(){
+        return new ApplicationFilters();
     }
 
     @Override

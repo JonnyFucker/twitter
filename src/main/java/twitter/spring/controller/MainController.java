@@ -1,15 +1,17 @@
 package twitter.spring.controller;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.social.SocialException;
-import org.springframework.social.twitter.api.SearchParameters;
 import org.springframework.social.twitter.api.SearchResults;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import twitter.spring.filters.ApplicationFilters;
+import twitter.spring.filters.TweeterFilter;
 
 
 import java.util.ArrayList;
@@ -18,13 +20,17 @@ import java.util.List;
 /**
  * Created by Tomek on 17.10.16.
  */
+@Log4j
 @Controller
-public class HomeController {
+@Scope("request")
+public class MainController {
     private final Twitter twitter;
-    private static final Logger logger = Logger.getLogger(HomeController.class);
 
     @Autowired
-    public HomeController(Twitter twitter) {
+    private ApplicationFilters applicationFilters;
+
+    @Autowired
+    public MainController(Twitter twitter) {
         this.twitter = twitter;
     }
 
@@ -34,11 +40,13 @@ public class HomeController {
         if (!tag.startsWith("#"))
             tag = "#" + tag;
 
+        applicationFilters.addFilter(new TweeterFilter("tweets", tag));
+
         try {
             SearchResults search = twitter.searchOperations().search(tag);
             return search.getTweets();
         } catch (SocialException e) {
-            logger.error(e);
+            log.error(e);
             return new ArrayList<>();
         }
     }
@@ -46,11 +54,12 @@ public class HomeController {
     @RequestMapping(value = "/person")
     @ResponseBody
     public List<Tweet> getPersonTweet(@RequestParam("name") String name) {
+        applicationFilters.addFilter(new TweeterFilter("person", name));
         try {
             List<Tweet> tweets = twitter.timelineOperations().getUserTimeline(name);
             return tweets;
         } catch (SocialException e) {
-            logger.error(e);
+            log.error(e);
             return new ArrayList<>();
         }
     }
