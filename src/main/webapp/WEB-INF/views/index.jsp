@@ -153,7 +153,7 @@
                     });
                 },
                 error: function () {
-                    $('#iconPeople').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
+                    $('#iconTag').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
                 }
             });
 

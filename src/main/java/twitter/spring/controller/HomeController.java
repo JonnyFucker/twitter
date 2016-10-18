@@ -1,6 +1,8 @@
 package twitter.spring.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.social.SocialException;
 import org.springframework.social.twitter.api.SearchParameters;
 import org.springframework.social.twitter.api.SearchResults;
 import org.springframework.social.twitter.api.Tweet;
@@ -10,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +21,7 @@ import java.util.List;
 @Controller
 public class HomeController {
     private final Twitter twitter;
+    private static final Logger logger = Logger.getLogger(HomeController.class);
 
     @Autowired
     public HomeController(Twitter twitter) {
@@ -26,19 +30,29 @@ public class HomeController {
 
     @RequestMapping(value = "/tweets")
     @ResponseBody
-    public List<Tweet> test(@RequestParam("tag") String tag)  {
+    public List<Tweet> test(@RequestParam("tag") String tag) {
         if (!tag.startsWith("#"))
             tag = "#" + tag;
 
-        SearchResults search = twitter.searchOperations().search(tag);
-        return search.getTweets();
+        try {
+            SearchResults search = twitter.searchOperations().search(tag);
+            return search.getTweets();
+        } catch (SocialException e) {
+            logger.error(e);
+            return new ArrayList<>();
+        }
     }
 
     @RequestMapping(value = "/person")
     @ResponseBody
-    public List<Tweet> getPersonTweet(@RequestParam("name") String name){
-        List<Tweet> tweets = twitter.timelineOperations().getUserTimeline(name);
-        return tweets;
+    public List<Tweet> getPersonTweet(@RequestParam("name") String name) {
+        try {
+            List<Tweet> tweets = twitter.timelineOperations().getUserTimeline(name);
+            return tweets;
+        } catch (SocialException e) {
+            logger.error(e);
+            return new ArrayList<>();
+        }
     }
 
     @GetMapping("/")
