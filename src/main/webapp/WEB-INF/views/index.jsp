@@ -157,7 +157,6 @@
                 }
                 if (boxId == 'searchPeople') {
                     $('#submitPeople').click();
-                    refreshFilters();
                 }
             }
         });
