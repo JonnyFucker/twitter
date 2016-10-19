@@ -3,14 +3,12 @@ package twitter.spring.controller;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import twitter.spring.filters.ApplicationFilters;
-import twitter.spring.filters.TweeterFilter;
+import twitter.spring.filters.services.ApplicationFiltersService;
+import twitter.spring.filters.model.TweeterFilterModel;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,17 +17,17 @@ import java.util.Set;
 @Log4j
 @RestController
 @Scope("request")
-public class FiltersManagement {
+public class FiltersManagementController {
     @Autowired
-    private ApplicationFilters applicationFilters;
+    private ApplicationFiltersService applicationFiltersService;
 
     @RequestMapping(value = "/filters")
-    public Set<TweeterFilter> getFilters() {
-        return applicationFilters.getTweeterFilters();
+    public Set<TweeterFilterModel> getFilters() {
+        return applicationFiltersService.getTweeterFilters();
     }
 
     @RequestMapping(value = "/filters/{filterValue}")
     public String getFilterSource(@PathVariable("filterValue") String filterValue) {
-        return applicationFilters.getFilterSource(filterValue);
+        return applicationFiltersService.getFilterSource(filterValue);
     }
 }

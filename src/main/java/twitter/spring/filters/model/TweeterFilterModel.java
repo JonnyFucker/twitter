@@ -1,4 +1,4 @@
-package twitter.spring.filters;
+package twitter.spring.filters.model;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
-public class TweeterFilter {
+public class TweeterFilterModel {
     private String source;
     private String value;
 }

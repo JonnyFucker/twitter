@@ -1,10 +1,11 @@
-package twitter.spring.filters;
+package twitter.spring.filters.services;
 
-import lombok.Getter;
 import lombok.Synchronized;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import twitter.spring.filters.model.TweeterFilterModel;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 /**
@@ -12,16 +13,20 @@ import java.util.*;
  */
 @Component
 @Scope("session")
-public class ApplicationFilters {
-    private Set<TweeterFilter> tweeterFilters;
+public class ApplicationFiltersService {
+    private Set<TweeterFilterModel> tweeterFilters;
     private int maxSize = 10;
 
-    public ApplicationFilters() {
+    public ApplicationFiltersService() {
+    }
+
+    @PostConstruct
+    public void init() {
         this.tweeterFilters = new LinkedHashSet<>(this.maxSize);
     }
 
     @Synchronized
-    public void addFilter(TweeterFilter tweeterFilter) {
+    public void addFilter(TweeterFilterModel tweeterFilter) {
         this.tweeterFilters.add(tweeterFilter);
         checkListSize();
     }
@@ -34,7 +39,7 @@ public class ApplicationFilters {
         return source;
     }
 
-    public Set<TweeterFilter> getTweeterFilters() {
+    public Set<TweeterFilterModel> getTweeterFilters() {
         return tweeterFilters;
     }
 

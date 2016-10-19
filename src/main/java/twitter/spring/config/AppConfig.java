@@ -3,7 +3,6 @@ package twitter.spring.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -11,8 +10,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
-import twitter.spring.filters.ApplicationFilters;
-import twitter.spring.filters.TweeterFilter;
+import twitter.spring.facades.TwitterFacade;
+import twitter.spring.facades.TwitterFacadeImpl;
+import twitter.spring.filters.services.ApplicationFiltersService;
 
 /**
  * Created by Tomek on 17.10.16.
@@ -31,8 +31,13 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public ApplicationFilters applicationFilters() {
-        return new ApplicationFilters();
+    public ApplicationFiltersService applicationFilters() {
+        return new ApplicationFiltersService();
+    }
+
+    @Bean
+    public TwitterFacade twitterFacade() {
+        return new TwitterFacadeImpl();
     }
 
     @Override

@@ -203,7 +203,6 @@
 
                 $('#tweetsPeople').paginathing({
                     perPage: 3,
-                    limitPagination: 4,
                     insertAfter: '#tweetsTablePeople',
                     containerClass: 'tweets-container-people'
                 });
@@ -230,7 +229,6 @@
 
                 $('#tweets').paginathing({
                     perPage: 3,
-                    limitPagination: 4,
                     insertAfter: '#tweetsTable',
                     containerClass: 'tweets-container'
                 });
