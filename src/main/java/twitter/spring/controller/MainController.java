@@ -10,6 +10,7 @@ import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import twitter.spring.facades.ApplicationFiltersFacade;
 import twitter.spring.facades.TwitterFacade;
 import twitter.spring.filters.services.ApplicationFiltersService;
 import twitter.spring.filters.model.TweeterFilterModel;
@@ -26,7 +27,7 @@ import java.util.List;
 public class MainController {
 
     @Autowired
-    private ApplicationFiltersService applicationFiltersService;
+    private ApplicationFiltersFacade applicationFiltersFacade;
 
     @Autowired
     private TwitterFacade twitterFacade;
@@ -35,7 +36,7 @@ public class MainController {
     @RequestMapping(value = "/tweets")
     @ResponseBody
     public List<Tweet> getTweetsByTag(@RequestParam("tag") String tag) {
-        applicationFiltersService.addFilter(new TweeterFilterModel("tweets", tag));
+        applicationFiltersFacade.addFilter("tweets", tag);
         return twitterFacade.searchTweetsByTag(tag);
 
     }
@@ -43,7 +44,7 @@ public class MainController {
     @RequestMapping(value = "/person")
     @ResponseBody
     public List<Tweet> getTweetsByChannel(@RequestParam("name") String name) {
-        applicationFiltersService.addFilter(new TweeterFilterModel("person", name));
+        applicationFiltersFacade.addFilter("person", name);
         return twitterFacade.searchTweetsByChannel(name);
     }
 
