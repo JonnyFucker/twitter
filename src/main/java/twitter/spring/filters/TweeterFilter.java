@@ -9,6 +9,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 public class TweeterFilter {
-     private String source;
-     private String value;
+    private String source;
+    private String value;
 }

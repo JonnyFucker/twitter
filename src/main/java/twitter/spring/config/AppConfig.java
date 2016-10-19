@@ -22,7 +22,7 @@ import twitter.spring.filters.TweeterFilter;
 @ComponentScan(basePackages = "twitter.spring")
 public class AppConfig extends WebMvcConfigurerAdapter {
     @Bean
-    public ViewResolver viewResolver(){
+    public ViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix("/WEB-INF/views/");
@@ -31,7 +31,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public ApplicationFilters applicationFilters(){
+    public ApplicationFilters applicationFilters() {
         return new ApplicationFilters();
     }
 

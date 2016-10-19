@@ -16,17 +16,18 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="twitterApp">
+    <meta name="author" content="Tomasz Zielichowski">
 
     <link href='<c:url value="/resources/css/bootstrap.min.css" />' rel="stylesheet">
     <link href='<c:url value="/resources/css/style.css" />' rel="stylesheet">
     <link href='<c:url value="/resources/css/font-awesome-animation.min.css" />' rel="stylesheet">
+    <link href='<c:url value="/resources/css/font-awesome.min.css" />' rel="stylesheet">
 
 
     <%--
-            <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
-        --%>
+                <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+            --%>
     <title>Twitter
         by Tomasz Zielichowski
     </title>
@@ -97,6 +98,7 @@
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-2">
+                    <h4 class="list-group-item active"><i class="fa fa-align-justify"></i> Filters</h4>
                     <div class="list-group" id="filters">
 
                     </div>
@@ -117,10 +119,17 @@
         getTweetsByTag();
         getTweetsByPerson();
 
-        $('a').click(function () {
-            var text = $(this).text();
-            console.log(text);
+        $('#filters').on('click', 'a', function () {
+            var filterValue = $(this).children().text();
+            console.log(filterValue);
+
+            $.get("/twitter/filters/" + filterValue, function (filterSource) {
+                //console.log(filterSource);
+                getTweets(filterSource, filterValue);
+            });
+
         });
+
     });
 
 </script>
@@ -129,10 +138,9 @@
 
     function refreshFilters() {
         $('#filters').empty();
-        $.get("/twitter/filters",function (filters) {
-            $.each(filters,function (index, val) {
-                console.log(val);
-                $('#filters').append("<a class='list-group-item list-group-item-info'>"+val.value+"</a>")
+        $.get("/twitter/filters", function (filters) {
+            $.each(filters, function (index, val) {
+                $('#filters').append("<a href=#! class=list-group-item> <i class='fa fa-chevron-right'></i> <span>" + val.value + "</span></a>")
             });
         });
     }
@@ -143,7 +151,6 @@
             if (event.keyCode == 13) {
                 if (boxId == 'search') {
                     $('#submitButton').click();
-                    refreshFilters();
                 }
                 if (boxId == 'searchPeople') {
                     $('#submitPeople').click();
@@ -154,10 +161,7 @@
     }
 
     function getTweetsByTag() {
-         $('#submitButton').on('click', function () {
-            $('#tweets').empty();
-            $('.tweets-container').remove();
-            $('#iconTag').removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
+        $('#submitButton').on('click', function () {
             var tag = $('#search').val();
             getTweetsByKeyWord(tag);
 
@@ -166,17 +170,25 @@
     function getTweetsByPerson() {
 
         $('#submitPeople').on('click', function () {
-            $('#tweetsPeople').empty();
-            $('.tweets-container-people').remove();
-            $('#iconPeople').removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
-
             var person = $('#searchPeople').val();
             getTweetsByChannelName(person);
 
         });
     }
 
+    function getTweets(filterSource, filterValue) {
+        if (filterSource == 'tweets') {
+            getTweetsByKeyWord(filterValue);
+        }
+        else if (filterSource == 'person') {
+            getTweetsByChannelName(filterValue);
+        }
+    }
+
     function getTweetsByChannelName(person) {
+        $('#tweetsPeople').empty();
+        $('.tweets-container-people').remove();
+        $('#iconPeople').removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
         $.ajax({
             type: "POST",
             data: {"name": person},
@@ -185,6 +197,7 @@
             success: function (data) {
                 $('#iconPeople').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
                 appendToTable(data, 'tweetsPeople');
+                refreshFilters();
 
                 $('#tweetsPeople').paginathing({
                     perPage: 3,
@@ -200,6 +213,9 @@
     }
 
     function getTweetsByKeyWord(tag) {
+        $('#tweets').empty();
+        $('.tweets-container').remove();
+        $('#iconTag').removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
         $.ajax({
             type: "POST",
             data: {"tag": tag},
@@ -208,6 +224,7 @@
             success: function (data) {
                 $('#iconTag').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
                 appendToTable(data, 'tweets');
+                refreshFilters();
 
                 $('#tweets').paginathing({
                     perPage: 3,
@@ -224,7 +241,7 @@
 
     function appendToTable(data, tableId) {
         var id = $("#" + tableId);
-        console.log(id);
+
         $.each(data, function (index, val) {
             $(id).append("<tr> <td class='col-md-2'> <img class='img-responsive' src=' " + val.profileImageUrl + " ' </img>  </td> " +
                     " <td class='col-md-1'>" + val.fromUser + "  </td> " +

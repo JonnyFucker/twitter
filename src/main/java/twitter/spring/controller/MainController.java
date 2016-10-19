@@ -37,10 +37,10 @@ public class MainController {
     @RequestMapping(value = "/tweets")
     @ResponseBody
     public List<Tweet> test(@RequestParam("tag") String tag) {
+        applicationFilters.addFilter(new TweeterFilter("tweets", tag));
+
         if (!tag.startsWith("#"))
             tag = "#" + tag;
-
-        applicationFilters.addFilter(new TweeterFilter("tweets", tag));
 
         try {
             SearchResults search = twitter.searchOperations().search(tag);
