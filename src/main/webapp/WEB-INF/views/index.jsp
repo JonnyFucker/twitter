@@ -41,16 +41,18 @@
             <div class="col-lg-12 margin">
                 <div class="col-md-5 col-lg-5">
                     <div>
-                        <div class="input-group">
-                            <input id="search" type="text" class="form-control"
-                                   placeholder="Search for tweets using key words">
-                            <span class="input-group-btn">
-                            <button id="submitButton" class="btn btn-default faa-parent animated-hover" type="submit">Search <span
-                                    id="iconTag"
-                                    class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        <div class="well">
+                            <h4>Use key words to search</h4>
+                            <div class="input-group">
+                                <input id="search" type="text" class="form-control"
+                                       placeholder="Search for tweets using key words">
+                                <span class="input-group-btn">
+                            <button id="submitButton" class="btn btn-default faa-parent animated-hover" type="submit">Search
+                                <span id="iconTag" class="glyphicon glyphicon-search" aria-hidden="true"> </span>
                             </button>
-                        </span>
-                        </div><!-- /input-group -->
+                            </span>
+                            </div><!-- /input-group -->
+                        </div>
                     </div>
                     <!-- /.col-lg-6 -->
                     <div id="tweetsTableDiv">
@@ -69,7 +71,8 @@
                     </div>
                 </div>
                 <div class="col-md-5 col-lg-5">
-                    <div>
+                    <div class="well">
+                        <h4>Use channels to search</h4>
                         <div class="input-group">
                             <input id="searchPeople" type="text" class="form-control"
                                    placeholder="Search for tweets using channel name">
