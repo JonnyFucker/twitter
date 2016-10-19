@@ -116,11 +116,11 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        enterOnSearchBox('search');
+/*        enterOnSearchBox('search');
         enterOnSearchBox('searchPeople');
         refreshFilters();
         getTweetsByTag();
-        getTweetsByPerson();
+        getTweetsByPerson();*/
 
         $('#filters').on('click', 'a', function () {
             var filterValue = $(this).children().text();
@@ -134,6 +134,79 @@
         });
 
     });
+
+
+    var twitterAction = {
+
+        init: function (settings) {
+            twitterAction.config = {
+                tbodyName: "#tweets",
+                paginContainer: ".tweets-container",
+                iconId: '#iconTag',
+                dataKey: 'name',
+                //dataValue: "brown",
+                url: "/twitter/tweets",
+                boxId: "#search",
+                buttonId: '#submitButton'
+            },
+                    o = $.extend(twitterAction.config, settings)
+        },
+
+        enterOnSearchBox: function () {
+            var id = twitterAction.config.boxId;
+            console.log(id);
+            $(id).keypress(function (event) {
+                if (event.keyCode == 13) {
+                    $(twitterAction.config.buttonId).click();
+                }
+            });
+        },
+        listenForSearchByTagButtonClick: function () {
+            $(twitterAction.config.buttonId).on('click', function () {
+                this.cos;
+
+            });
+        },
+        cos: function () {
+            var tag = $(twitterAction.config.boxId).val();
+            console.log(tag)
+            this.removeOldContent();
+            this.ajaxPost(tag);
+        },
+        removeOldContent: function () {
+            $(twitterAction.config.tbodyName).empty();
+            $(twitterAction.config.paginContainer).remove();
+            $(twitterAction.config.iconId).removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
+        },
+        ajaxPost: function (dataValue) {
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify({
+                    tag: dataValue
+                }),
+                dataType: "json",
+                url: twitterAction.config.url,
+                success: function (data) {
+                    $(twitterAction.config.iconId).removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
+                    appendToTable(data, 'tweets');
+                    refreshFilters();
+
+                    $(twitterAction.config.tbodyName).paginathing({
+                        perPage: 3,
+                        insertAfter: '#tweetsTable',
+                        containerClass: 'tweets-container'
+                    });
+                },
+                error: function () {
+                    $(twitterAction.config.iconId).removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
+                }
+            });
+        }
+    };
+    twitterAction.init();
+    twitterAction.enterOnSearchBox();
+    twitterAction.listenForSearchByTagButtonClick();
+
 
 </script>
 

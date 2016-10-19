@@ -43,9 +43,9 @@ public class MainController {
 
     @RequestMapping(value = "/person")
     @ResponseBody
-    public List<Tweet> getTweetsByChannel(@RequestParam("name") String name) {
-        applicationFiltersFacade.addFilter("person", name);
-        return twitterFacade.searchTweetsByChannel(name);
+    public List<Tweet> getTweetsByChannel(@RequestParam("tag") String tag) {
+        applicationFiltersFacade.addFilter("person", tag);
+        return twitterFacade.searchTweetsByChannel(tag);
     }
 
     @GetMapping("/")
