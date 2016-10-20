@@ -113,216 +113,58 @@
 <script src='<c:url value="/resources/js/jquery-3.1.1.js"/>'></script>
 <script src='<c:url value="/resources/js/bootstrap.min.js"/>'></script>
 <script src='<c:url value="/resources/js/paginathing.js"/>'></script>
+<script src='<c:url value="/resources/js/twitterScript.js"/>'></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
-/*        enterOnSearchBox('search');
-        enterOnSearchBox('searchPeople');
         refreshFilters();
-        getTweetsByTag();
-        getTweetsByPerson();*/
+
+        var getTweetsByTag = new Tweet();
+        getTweetsByTag.enterOnSearchBox();
+        getTweetsByTag.listenForSearchByTagButtonClick();
+
+        var getTweetsByChannel = new Tweet({
+            tbodyName: "#tweetsPeople",
+            tableName: "tweetsPeople",
+            tableId: "#tweetsTablePeople",
+            paginContainer: "tweets-container-people",
+            iconId: '#iconPeople',
+            url: "/twitter/person",
+            boxId: "#searchPeople",
+            buttonId: '#submitPeople'
+        });
+
+        getTweetsByChannel.enterOnSearchBox();
+        getTweetsByChannel.listenForSearchByTagButtonClick();
+
 
         $('#filters').on('click', 'a', function () {
             var filterValue = $(this).children().text();
             console.log(filterValue);
 
             $.get("/twitter/filters/" + filterValue, function (filterSource) {
-                //console.log(filterSource);
                 getTweets(filterSource, filterValue);
             });
 
         });
 
+        function getTweets(filterSource, filterValue) {
+            if (filterSource == 'tweets') {
+                getTweetsByTag.removeOldContent();
+                getTweetsByTag.ajaxPost(filterValue);
+            }
+            else if (filterSource == 'person') {
+                getTweetsByChannel.removeOldContent();
+                getTweetsByChannel.ajaxPost(filterValue);
+            }
+        }
+
+
+
+
     });
 
 
-    var twitterAction = {
-
-        init: function (settings) {
-            twitterAction.config = {
-                tbodyName: "#tweets",
-                paginContainer: ".tweets-container",
-                iconId: '#iconTag',
-                dataKey: 'name',
-                //dataValue: "brown",
-                url: "/twitter/tweets",
-                boxId: "#search",
-                buttonId: '#submitButton'
-            },
-                    o = $.extend(twitterAction.config, settings)
-        },
-
-        enterOnSearchBox: function () {
-            var id = twitterAction.config.boxId;
-            console.log(id);
-            $(id).keypress(function (event) {
-                if (event.keyCode == 13) {
-                    $(twitterAction.config.buttonId).click();
-                }
-            });
-        },
-        listenForSearchByTagButtonClick: function () {
-            $(twitterAction.config.buttonId).on('click', function () {
-                this.cos;
-
-            });
-        },
-        cos: function () {
-            var tag = $(twitterAction.config.boxId).val();
-            console.log(tag)
-            this.removeOldContent();
-            this.ajaxPost(tag);
-        },
-        removeOldContent: function () {
-            $(twitterAction.config.tbodyName).empty();
-            $(twitterAction.config.paginContainer).remove();
-            $(twitterAction.config.iconId).removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
-        },
-        ajaxPost: function (dataValue) {
-            $.ajax({
-                type: "POST",
-                data: JSON.stringify({
-                    tag: dataValue
-                }),
-                dataType: "json",
-                url: twitterAction.config.url,
-                success: function (data) {
-                    $(twitterAction.config.iconId).removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
-                    appendToTable(data, 'tweets');
-                    refreshFilters();
-
-                    $(twitterAction.config.tbodyName).paginathing({
-                        perPage: 3,
-                        insertAfter: '#tweetsTable',
-                        containerClass: 'tweets-container'
-                    });
-                },
-                error: function () {
-                    $(twitterAction.config.iconId).removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
-                }
-            });
-        }
-    };
-    twitterAction.init();
-    twitterAction.enterOnSearchBox();
-    twitterAction.listenForSearchByTagButtonClick();
-
-
-</script>
-
-<script type="text/javascript">
-
-    function refreshFilters() {
-        $('#filters').empty();
-        $.get("/twitter/filters", function (filters) {
-            $.each(filters, function (index, val) {
-                $('#filters').append("<a href=#! class=list-group-item> <i class='fa fa-chevron-right'></i> <span>" + val.value + "</span></a>")
-            });
-        });
-    }
-
-    function enterOnSearchBox(boxId) {
-        var id = $("#" + boxId);
-        $(id).keypress(function (event) {
-            if (event.keyCode == 13) {
-                if (boxId == 'search') {
-                    $('#submitButton').click();
-                }
-                if (boxId == 'searchPeople') {
-                    $('#submitPeople').click();
-                }
-            }
-        });
-    }
-
-    function getTweetsByTag() {
-        $('#submitButton').on('click', function () {
-            var tag = $('#search').val();
-            getTweetsByKeyWord(tag);
-
-        });
-    }
-    function getTweetsByPerson() {
-
-        $('#submitPeople').on('click', function () {
-            var person = $('#searchPeople').val();
-            getTweetsByChannelName(person);
-
-        });
-    }
-
-    function getTweets(filterSource, filterValue) {
-        if (filterSource == 'tweets') {
-            getTweetsByKeyWord(filterValue);
-        }
-        else if (filterSource == 'person') {
-            getTweetsByChannelName(filterValue);
-        }
-    }
-
-    function getTweetsByChannelName(person) {
-        $('#tweetsPeople').empty();
-        $('.tweets-container-people').remove();
-        $('#iconPeople').removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
-        $.ajax({
-            type: "POST",
-            data: {"name": person},
-            dataType: "json",
-            url: "/twitter/person",
-            success: function (data) {
-                $('#iconPeople').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
-                appendToTable(data, 'tweetsPeople');
-                refreshFilters();
-
-                $('#tweetsPeople').paginathing({
-                    perPage: 3,
-                    insertAfter: '#tweetsTablePeople',
-                    containerClass: 'tweets-container-people'
-                });
-            },
-            error: function () {
-                $('#iconPeople').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
-            }
-        });
-    }
-
-    function getTweetsByKeyWord(tag) {
-        $('#tweets').empty();
-        $('.tweets-container').remove();
-        $('#iconTag').removeClass('glyphicon-search').addClass('glyphicon-repeat faa-spin animated');
-        $.ajax({
-            type: "POST",
-            data: {"tag": tag},
-            dataType: "json",
-            url: "/twitter/tweets",
-            success: function (data) {
-                $('#iconTag').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
-                appendToTable(data, 'tweets');
-                refreshFilters();
-
-                $('#tweets').paginathing({
-                    perPage: 3,
-                    insertAfter: '#tweetsTable',
-                    containerClass: 'tweets-container'
-                });
-            },
-            error: function () {
-                $('#iconTag').removeClass('glyphicon-repeat faa-spin animated').addClass('glyphicon glyphicon-search');
-            }
-        });
-    }
-
-    function appendToTable(data, tableId) {
-        var id = $("#" + tableId);
-
-        $.each(data, function (index, val) {
-            $(id).append("<tr> <td class='col-md-2'> <img class='img-responsive' src=' " + val.profileImageUrl + " ' </img>  </td> " +
-                    " <td class='col-md-1'>" + val.fromUser + "  </td> " +
-                    " <td class='col-md-5'>" + val.text + "  </td> " +
-                    " <td class='col-md-1'>" + val.source + "  </td></tr> "
-            );
-        });
-    }
 </script>
 </body>
 </html>
